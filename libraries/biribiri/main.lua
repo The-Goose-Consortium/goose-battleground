@@ -1,8 +1,17 @@
 biribiri = {}
-
 assets = {}
 
-local Timer = require("biribiri.timer")
+---@class Animation
+---@field spriteSheet love.Image
+---@field quads table
+---@field duration number
+---@field currentTime number
+---@field activeSprite love.Quad
+
+---@type table<string, Animation>
+animations = {}
+
+local Timer = require("libraries.biribiri.timer")
 
 local activeTimers = {}
 
@@ -49,6 +58,13 @@ function biribiri:Update(dt)
                     timer:Start()
                 end
             end
+        end
+    end
+
+    for _,animation in pairs(animations) do
+        animation.currentTime = animation.currentTime + dt
+        if animation.currentTime >= animation.duration then
+            animation.currentTime = animation.currentTime - animation.duration
         end
     end
 end
@@ -277,4 +293,28 @@ end
 ---@param size? number Size for the font
 function biribiri:SetFontSize(path, size)
     assets[path] = love.graphics.newFont(path, size)
+end
+
+--- Create an animation with a spritesheet (stolen from the love2d docs and repurposed!!!)
+---@param id string The id of the animation
+---@param image love.Image The image to set
+---@param width number The width of each frame
+---@param height number The height of each frame
+---@param duration number The duration of the animation
+function biribiri:NewAnimation(id, image, width, height, duration)
+    local animation = {}
+    animation.spriteSheet = image;
+    animation.quads = {};
+
+    for y = 0, image:getHeight() - height, height do
+        for x = 0, image:getWidth() - width, width do
+            table.insert(animation.quads, love.graphics.newQuad(x, y, width, height, image:getDimensions()))
+        end
+    end
+
+    animation.duration = duration or 1
+    animation.currentTime = 0
+
+    animations[id] = animation
+    return animation
 end

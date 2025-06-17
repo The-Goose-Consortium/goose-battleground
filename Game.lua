@@ -1,0 +1,3 @@
+Game = {
+    ActiveScene = "Debug1"
+}
