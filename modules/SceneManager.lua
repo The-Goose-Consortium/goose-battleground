@@ -2,12 +2,12 @@ SceneManager = {}
 
 ---@class Scene
 ---@field name string The name of the scene
+---@field activate fun(self: Scene) The function to be called when the scene is activated
 ---@field draw fun(self: Scene) The draw function to run every frame
 ---@field update fun(self: Scene, dt: number) The update function to run every frame
 
 ---@type table<Scene>
 SceneManager.scenes = {}
-SceneManager.activeScene = nil
 
 ---Register all scenes
 function SceneManager:RegisterAllScenes()
@@ -37,20 +37,22 @@ function SceneManager:UpdateScene(sceneName, dt)
 end
 
 function SceneManager:SetActiveScene(name)
-    local found = false
+    ---@type Scene|boolean
+    local scene = false
     for _,v in pairs(self.scenes) do 
         if v.name == name then 
-            found = true
+            scene = v
             break
         end
     end
 
-    if found == false then 
+    if scene == false then 
         print("⚠️ | A scene with the name " .. name .. " could not be found.")
         return
     end
 
-    self.activeScene = name
+    Game.ActiveScene = name
+    scene:activate()
 end
 
 return SceneManager

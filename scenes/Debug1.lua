@@ -1,13 +1,19 @@
+local player = require "modules.player"
 local Scene = {
     name = "Debug1"
 }
 
+
+function Scene:activate()
+    player:load()
+end
+
 function Scene:draw()
-    love.graphics.print("hai!")
+    player:draw()
 end
 
 function Scene:update(dt)
-
+    player:update(dt)
 end
 
 return Scene

@@ -6,7 +6,6 @@ assets = {}
 ---@field quads table
 ---@field duration number
 ---@field currentTime number
----@field activeSprite love.Quad
 
 ---@type table<string, Animation>
 animations = {}
@@ -58,13 +57,6 @@ function biribiri:Update(dt)
                     timer:Start()
                 end
             end
-        end
-    end
-
-    for _,animation in pairs(animations) do
-        animation.currentTime = animation.currentTime + dt
-        if animation.currentTime >= animation.duration then
-            animation.currentTime = animation.currentTime - animation.duration
         end
     end
 end
@@ -302,6 +294,8 @@ end
 ---@param height number The height of each frame
 ---@param duration number The duration of the animation
 function biribiri:NewAnimation(id, image, width, height, duration)
+    if animations[id] then return end
+
     local animation = {}
     animation.spriteSheet = image;
     animation.quads = {};
@@ -317,4 +311,23 @@ function biribiri:NewAnimation(id, image, width, height, duration)
 
     animations[id] = animation
     return animation
+end
+
+---Reset an animation by setting its time back to currentTime
+---@param id string The id of the animation
+function biribiri:ResetAnimation(id)
+    local anim = animations[id]
+    if anim then
+        anim.currentTime = 0
+    end
+end
+
+function biribiri:UpdateAnimation(id, dt)
+    local anim = animations[id]
+    if anim then
+        anim.currentTime = anim.currentTime + dt
+        if anim.currentTime >= anim.duration then
+            anim.currentTime = anim.currentTime - anim.duration
+        end
+    end
 end
